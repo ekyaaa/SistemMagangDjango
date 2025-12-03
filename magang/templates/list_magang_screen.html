@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagangHub - Mulai Karirmu Disini</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Config for Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: 1, boxShadow: '0 0 20px #0ea5e9' },
+                            '50%': { opacity: .7, boxShadow: '0 0 10px #0ea5e9' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-slate-200 antialiased overflow-x-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- Background Elements -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-600/20 rounded-full blur-[128px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[128px]"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 transition-all duration-300 backdrop-blur-md border-b border-white/5 bg-dark-900/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <div class="bg-gradient-to-br from-brand-500 to-purple-600 p-2 rounded-lg">
+                        <i data-lucide="briefcase" class="text-white w-5 h-5"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-white">Magang<span class="text-brand-500">Hub</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#" class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">Beranda</a>
+                        <a href="#featured" class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">Kategori</a>
+                        <a href="#list-magang" class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">Lowongan</a>
+                        <button class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all border border-white/10">
+                            Masuk Admin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative z-10 pt-32 pb-20 lg:pt-48 lg:pb-32 text-center px-4">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-sm font-medium animate-fade-in-up">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                </span>
+                Portal Pendaftaran Magang Resmi
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+                Temukan Posisi <br/>
+                <span class="gradient-text">Magang Impianmu</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
+                Pendaftaran mudah tanpa akun. Pilih lowongan, isi data diri, dan kirim lamaran langsung ke departemen terkait.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10">
+                <button onclick="scrollToJobs()" class="group relative px-8 py-4 bg-brand-600 rounded-full font-semibold text-white shadow-lg shadow-brand-500/30 hover:shadow-brand-500/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                    <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:animate-[shimmer_1s_infinite]"></div>
+                    <span class="flex items-center gap-2">
+                        Lihat Lowongan
+                        <i data-lucide="arrow-down" class="w-4 h-4 group-hover:translate-y-1 transition-transform"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search & Filter Bar (Sticky) -->
+    <div id="list-magang" class="sticky top-16 z-40 bg-dark-900/90 backdrop-blur-xl border-y border-white/10 py-4 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <h2 class="text-xl font-semibold text-white flex items-center gap-2">
+                <i data-lucide="layers" class="text-brand-500"></i>
+                Daftar Lowongan Tersedia
+            </h2>
+            <div class="flex w-full md:w-auto gap-2">
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-500 w-5 h-5"></i>
+                    <input type="text" placeholder="Cari posisi atau departemen..." class="w-full bg-dark-800 border border-slate-700 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block pl-10 p-2.5 placeholder-slate-500 transition-all">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job List Section -->
+    <section class="relative z-10 py-12 px-4 max-w-7xl mx-auto min-h-screen">
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="job-container">
+            <!-- Job Cards will be injected by JS -->
+        </div>
+    </section>
+
+    <!-- Application Modal -->
+    <div id="applyModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <!-- Modal Panel -->
+                <div class="relative transform overflow-hidden rounded-2xl glass-card text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl scale-95 opacity-0" id="modalPanel">
+                    
+                    <!-- Modal Header -->
+                    <div class="bg-gradient-to-r from-brand-600 to-purple-600 px-6 py-4 flex justify-between items-center sticky top-0 z-20">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Formulir Pendaftaran</h3>
+                            <p class="text-xs text-brand-100 mt-0.5">Isi data sesuai KTP dan Transkrip</p>
+                        </div>
+                        <button type="button" onclick="closeModal()" class="text-white/70 hover:text-white transition-colors bg-white/10 rounded-full p-1">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="px-6 py-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                        <div class="mb-6 p-4 bg-brand-500/10 border border-brand-500/20 rounded-lg">
+                            <p class="text-sm text-brand-100 mb-3">
+                                Melamar: <span id="modalJobRole" class="font-bold text-white">Posisi</span> <br>
+                                Departemen: <span id="modalDeptName" class="font-semibold text-brand-300">Dept</span>
+                            </p>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                <span id="modalJobDescription" class="italic">Deskripsi pekerjaan akan muncul di sini</span>
+                            </p>
+                            <input type="hidden" id="id_lowongan" name="lowongan">
+                        </div>
+
+                        <form id="applicationForm" onsubmit="handleApply(event)" class="space-y-4">
+                            <!-- Grid Layout for Fields -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- NIK -->
+                                <div>
+                                    <label for="nik" class="block text-sm font-medium text-slate-300 mb-1">NIK</label>
+                                    <input type="text" id="nik" name="nik" required maxlength="20" class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5" placeholder="Nomor Induk Kependudukan">
+                                </div>
+                                
+                                <!-- Nama -->
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-slate-300 mb-1">Nama Lengkap</label>
+                                    <input type="text" id="name" name="name" required class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5" placeholder="Sesuai KTP">
+                                </div>
+
+                                <!-- Gender -->
+                                <div>
+                                    <label for="gender" class="block text-sm font-medium text-slate-300 mb-1">Jenis Kelamin</label>
+                                    <select id="gender" name="gender" required class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5">
+                                        <option value="" disabled selected>Pilih Gender</option>
+                                        <option value="L">Laki-laki</option>
+                                        <option value="P">Perempuan</option>
+                                    </select>
+                                </div>
+
+                                <!-- DOB -->
+                                <div>
+                                    <label for="dob" class="block text-sm font-medium text-slate-300 mb-1">Tanggal Lahir</label>
+                                    <input type="date" id="dob" name="dob" required class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5 [color-scheme:dark]">
+                                </div>
+
+                                <!-- No Telp -->
+                                <div>
+                                    <label for="no_telp" class="block text-sm font-medium text-slate-300 mb-1">No. Telepon</label>
+                                    <input type="tel" id="no_telp" name="no_telp" required class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5" placeholder="08xxxxxxxxxx">
+                                </div>
+
+                                <!-- IPK -->
+                                <div>
+                                    <label for="ipk" class="block text-sm font-medium text-slate-300 mb-1">IPK Terakhir</label>
+                                    <input type="number" id="ipk" name="ipk" step="0.01" min="0" max="4.00" class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5" placeholder="Ex: 3.50">
+                                </div>
+
+                                <!-- Universitas -->
+                                <div>
+                                    <label for="university" class="block text-sm font-medium text-slate-300 mb-1">Universitas</label>
+                                    <input type="text" id="university" name="university" required class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5">
+                                </div>
+
+                                <!-- Jurusan -->
+                                <div>
+                                    <label for="major" class="block text-sm font-medium text-slate-300 mb-1">Jurusan</label>
+                                    <input type="text" id="major" name="major" required class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5">
+                                </div>
+                            </div>
+
+                            <!-- Alamat (Full Width) -->
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-slate-300 mb-1">Alamat Lengkap</label>
+                                <textarea id="address" name="address" rows="2" required class="w-full bg-dark-900/50 border border-slate-600 text-white text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2.5" placeholder="Alamat domisili saat ini"></textarea>
+                            </div>
+
+                            <!-- Upload CV -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-1">Upload CV (PDF)</label>
+                                <label for="path_cv" class="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-600 border-dashed rounded-lg cursor-pointer hover:bg-slate-800 hover:border-brand-500 transition-all bg-dark-900/30">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <i data-lucide="file-up" class="w-6 h-6 text-slate-400 mb-1"></i>
+                                        <p class="text-xs text-slate-400">PDF (Maks. 2MB)</p>
+                                    </div>
+                                    <input id="path_cv" name="path_cv" type="file" class="hidden" accept=".pdf" required />
+                                </label>
+                            </div>
+
+                            <div class="pt-4">
+                                <button type="submit" class="w-full text-white bg-brand-600 hover:bg-brand-700 focus:ring-4 focus:outline-none focus:ring-brand-800 font-medium rounded-lg text-sm px-5 py-3 text-center transition-all shadow-lg shadow-brand-500/20">
+                                    Kirim Data Pendaftaran
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-500">
+        <div class="flex items-center w-full max-w-xs p-4 rounded-lg shadow glass-card bg-dark-800 border-l-4 border-green-500" role="alert">
+            <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100/10 rounded-lg">
+                <i data-lucide="check" class="w-5 h-5"></i>
+            </div>
+            <div class="ml-3 text-sm font-normal text-white">
+                <span class="font-semibold block">Berhasil!</span>
+                Data pendaftaran telah tersimpan.
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-dark-900 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-2 mb-4">
+                <div class="bg-brand-600 p-1.5 rounded-lg">
+                    <i data-lucide="briefcase" class="text-white w-4 h-4"></i>
+                </div>
+                <span class="font-bold text-lg text-white">Magang<span class="text-brand-500">Hub</span></span>
+            </div>
+            <p class="text-slate-500 text-sm mb-8">© 2023 MagangHub Indonesia. Platform Magang Terintegrasi.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Sample Data based on 'Lowongan' & 'Departement' Models
+        const jobs = [
+            { 
+                id_lowongan: 1, 
+                posisi: "IT Support Intern", 
+                nama_dept: "Departemen IT", 
+                deskripsi: "Membantu maintenance hardware dan jaringan kantor pusat.",
+                tanggal_mulai: "2023-11-01",
+                tanggal_selesai: "2024-02-01",
+                logoColor: "bg-blue-600" 
+            },
+            { 
+                id_lowongan: 2, 
+                posisi: "Finance Administration", 
+                nama_dept: "Departemen Keuangan", 
+                deskripsi: "Membantu rekapitulasi data keuangan harian dan pengarsipan dokumen.",
+                tanggal_mulai: "2023-12-01",
+                tanggal_selesai: "2024-03-01",
+                logoColor: "bg-green-600" 
+            },
+            { 
+                id_lowongan: 3, 
+                posisi: "Digital Marketing", 
+                nama_dept: "Departemen Pemasaran", 
+                deskripsi: "Membuat konten sosial media dan analisis engagement bulanan.",
+                tanggal_mulai: "2023-11-15",
+                tanggal_selesai: "2024-02-15",
+                logoColor: "bg-purple-600" 
+            },
+            { 
+                id_lowongan: 4, 
+                posisi: "HR Recruiter", 
+                nama_dept: "Departemen SDM", 
+                deskripsi: "Membantu proses screening CV awal dan penjadwalan interview.",
+                tanggal_mulai: "2024-01-01",
+                tanggal_selesai: "2024-04-01",
+                logoColor: "bg-orange-600" 
+            },
+        ];
+
+        // Format Date Helper
+        const formatDate = (dateStr) => {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        // Render Jobs
+        const jobContainer = document.getElementById('job-container');
+        
+        function renderJobs() {
+            jobContainer.innerHTML = jobs.map(job => `
+                <div class="glass-card rounded-2xl p-6 hover:-translate-y-2 transition-transform duration-300 group cursor-default relative overflow-hidden flex flex-col h-full">
+                    <div class="absolute top-0 right-0 p-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="arrow-up-right" class="text-brand-400 w-5 h-5"></i>
+                    </div>
+                    
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="${job.logoColor} w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shrink-0">
+                            ${job.nama_dept.charAt(11) || 'D'} <!-- Ambil huruf setelah 'Departemen ' -->
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-white group-hover:text-brand-400 transition-colors leading-tight mb-1">${job.posisi}</h3>
+                            <p class="text-slate-400 text-sm font-medium flex items-center gap-1">
+                                <i data-lucide="building-2" class="w-3 h-3"></i> ${job.nama_dept}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 flex-grow">
+                        <p class="text-slate-400 text-sm line-clamp-2">${job.deskripsi}</p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-700/50 text-slate-300 border border-slate-600 flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3 h-3"></i>
+                            ${formatDate(job.tanggal_mulai)} - ${formatDate(job.tanggal_selesai)}
+                        </span>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/10 mt-auto">
+                        <button onclick="openModal(${job.id_lowongan})" class="w-full px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-brand-900/50 flex justify-center items-center gap-2">
+                            Daftar Sekarang
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Re-init icons for new elements
+            lucide.createIcons();
+        }
+
+        renderJobs();
+
+        // Smooth Scroll Function
+        function scrollToJobs() {
+            const section = document.getElementById('list-magang');
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('applyModal');
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        const modalPanel = document.getElementById('modalPanel');
+
+        function openModal(idLowongan) {
+            const job = jobs.find(j => j.id_lowongan === idLowongan);
+            
+            if(job) {
+                document.getElementById('modalJobRole').textContent = job.posisi;
+                document.getElementById('modalDeptName').textContent = job.nama_dept;
+                document.getElementById('modalJobDescription').textContent = job.deskripsi;
+                document.getElementById('id_lowongan').value = job.id_lowongan;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalBackdrop.classList.remove('opacity-0');
+                    modalPanel.classList.remove('opacity-0', 'scale-95');
+                    modalPanel.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
+        }
+
+        function closeModal() {
+            modalBackdrop.classList.add('opacity-0');
+            modalPanel.classList.remove('opacity-100', 'scale-100');
+            modalPanel.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('applicationForm').reset();
+            }, 300); 
+        }
+
+        modalBackdrop.addEventListener('click', closeModal);
+
+        // Form Handling
+        function handleApply(e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            
+            // Collect Form Data (Simulation for Pendaftar Model)
+            const formData = new FormData(e.target);
+            const dataPendaftar = Object.fromEntries(formData.entries());
+            console.log("Data Pendaftar (Model):", dataPendaftar); // For debugging
+            
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-5 h-5 mx-auto"></i>`;
+            btn.disabled = true;
+
+            setTimeout(() => {
+                closeModal();
+                showToast();
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                lucide.createIcons();
+            }, 1500);
+        }
+
+        // Toast Notification
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
