@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagangHub Admin - Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        secondary: '#64748b',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f8fafc; /* Slate 50 - Very light grey for eye comfort */
+        }
+        .sidebar-active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border-right: 3px solid #2563eb;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- Wrapper -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex md:flex-col justify-between z-10">
+            <div>
+                <!-- Logo -->
+                <div class="h-16 flex items-center px-6 border-b border-slate-100">
+                    <div class="flex items-center gap-2 font-bold text-xl text-slate-800">
+                        <div class="bg-primary-600 p-1.5 rounded text-white">
+                            <i data-lucide="briefcase" class="w-5 h-5"></i>
+                        </div>
+                        Magang<span class="text-primary-600">Hub</span>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="mt-6 px-3 space-y-1">
+                    <a href="#" class="sidebar-active flex items-center gap-3 px-3 py-3 text-sm font-medium rounded-md transition-colors">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        Dashboard
+                    </a>
+                    <a href="admin_data.html" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
+                        <i data-lucide="database" class="w-5 h-5"></i>
+                        Manajemen Data
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        Daftar Pendaftar
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        Pengaturan
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Profile Bottom -->
+            <div class="p-4 border-t border-slate-100">
+                <div class="flex items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name=Admin+Magang&background=eff6ff&color=2563eb" class="w-10 h-10 rounded-full border border-slate-200">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-700">Administrator</p>
+                        <p class="text-xs text-slate-500">admin@maganghub.id</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header -->
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-8">
+                <div class="flex items-center gap-4">
+                    <button class="md:hidden text-slate-500 hover:text-slate-700">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <h1 class="text-xl font-semibold text-slate-800" id="greeting">Dashboard</h1>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Notifications -->
+                    <button class="relative p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                    </button>
+                    
+                    <div class="h-8 w-px bg-slate-200"></div>
+
+                    <button class="text-sm font-medium text-slate-600 hover:text-slate-900">Logout</button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+                
+                <!-- Stats Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow border border-slate-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">Total Pendaftar</p>
+                                <h3 class="text-3xl font-bold text-slate-800 mt-1">1,248</h3>
+                            </div>
+                            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <span class="text-green-500 font-medium flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +12%
+                            </span>
+                            <span class="text-slate-400 ml-2">dari bulan lalu</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow border border-slate-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">Lowongan Aktif</p>
+                                <h3 class="text-3xl font-bold text-slate-800 mt-1">24</h3>
+                            </div>
+                            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <i data-lucide="briefcase" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <span class="text-slate-500 font-medium">
+                                4 Departemen
+                            </span>
+                            <span class="text-slate-400 ml-2">sedang membuka</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow border border-slate-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">Menunggu Review</p>
+                                <h3 class="text-3xl font-bold text-slate-800 mt-1">86</h3>
+                            </div>
+                            <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                                <i data-lucide="clock" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <span class="text-amber-600 font-medium">Perlu tindakan</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow border border-slate-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">Tingkat Penerimaan</p>
+                                <h3 class="text-3xl font-bold text-slate-800 mt-1">18%</h3>
+                            </div>
+                            <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <span class="text-slate-400">Total Diterima: </span>
+                            <span class="text-slate-700 font-semibold ml-1">224</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    
+                    <!-- Main Chart: Trends -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl card-shadow border border-slate-100">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-semibold text-slate-800">Tren Pendaftaran (30 Hari Terakhir)</h3>
+                            <select class="text-sm border-slate-200 rounded-lg text-slate-500 focus:ring-primary-500 focus:border-primary-500 p-1">
+                                <option>30 Hari</option>
+                                <option>7 Hari</option>
+                                <option>Tahun Ini</option>
+                            </select>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Side Chart: Department Distribution -->
+                    <div class="bg-white p-6 rounded-xl card-shadow border border-slate-100">
+                        <h3 class="font-semibold text-slate-800 mb-6">Pendaftar per Departemen</h3>
+                        <div class="h-64 relative flex items-center justify-center">
+                            <canvas id="deptChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="bg-white rounded-xl card-shadow border border-slate-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="font-semibold text-slate-800">Pendaftar Terbaru (Pending Review)</h3>
+                        <button class="text-sm text-primary-600 hover:text-primary-700 font-medium">Lihat Semua</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-600">
+                            <thead class="text-xs text-slate-500 uppercase bg-slate-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Nama Pendaftar</th>
+                                    <th scope="col" class="px-6 py-3">Posisi Dilamar</th>
+                                    <th scope="col" class="px-6 py-3">Universitas</th>
+                                    <th scope="col" class="px-6 py-3">Tanggal</th>
+                                    <th scope="col" class="px-6 py-3">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="bg-white hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">BP</div>
+                                        Budi Pratama
+                                    </td>
+                                    <td class="px-6 py-4">IT Support Intern</td>
+                                    <td class="px-6 py-4">Univ. Indonesia</td>
+                                    <td class="px-6 py-4">04 Des 2023</td>
+                                    <td class="px-6 py-4">
+                                        <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-amber-200">Pending</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="bg-white hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-bold">SA</div>
+                                        Siti Aminah
+                                    </td>
+                                    <td class="px-6 py-4">Digital Marketing</td>
+                                    <td class="px-6 py-4">Univ. Gadjah Mada</td>
+                                    <td class="px-6 py-4">04 Des 2023</td>
+                                    <td class="px-6 py-4">
+                                        <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-amber-200">Pending</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="bg-white hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold">RA</div>
+                                        Rizky Aditya
+                                    </td>
+                                    <td class="px-6 py-4">Finance Admin</td>
+                                    <td class="px-6 py-4">Univ. Brawijaya</td>
+                                    <td class="px-6 py-4">03 Des 2023</td>
+                                    <td class="px-6 py-4">
+                                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-green-200">Approved</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="bg-white hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xs font-bold">DW</div>
+                                        Dewi Wulandari
+                                    </td>
+                                    <td class="px-6 py-4">HR Recruiter</td>
+                                    <td class="px-6 py-4">ITB</td>
+                                    <td class="px-6 py-4">02 Des 2023</td>
+                                    <td class="px-6 py-4">
+                                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-red-200">Rejected</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Greeting Logic
+        const hour = new Date().getHours();
+        const greetingElement = document.getElementById('greeting');
+        let greetingText = 'Selamat Pagi';
+        if (hour >= 12 && hour < 15) greetingText = 'Selamat Siang';
+        else if (hour >= 15 && hour < 18) greetingText = 'Selamat Sore';
+        else if (hour >= 18) greetingText = 'Selamat Malam';
+        greetingElement.textContent = `${greetingText}, Admin!`;
+
+        // --- Chart 1: Trend Pendaftaran (Line Chart) ---
+        const ctxTrend = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+                labels: ['1 Nov', '5 Nov', '10 Nov', '15 Nov', '20 Nov', '25 Nov', '30 Nov', '4 Des'],
+                datasets: [{
+                    label: 'Pendaftar Masuk',
+                    data: [12, 19, 15, 25, 22, 30, 28, 35],
+                    borderColor: '#3b82f6', // primary-500
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4, // Smooth curves
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3b82f6',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [2, 4], color: '#f1f5f9' },
+                        ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                    }
+                }
+            }
+        });
+
+        // --- Chart 2: Pendaftar per Departemen (Doughnut Chart) ---
+        const ctxDept = document.getElementById('deptChart').getContext('2d');
+        new Chart(ctxDept, {
+            type: 'doughnut',
+            data: {
+                labels: ['IT', 'Keuangan', 'Marketing', 'SDM', 'Operasional'],
+                datasets: [{
+                    data: [45, 20, 35, 15, 10],
+                    backgroundColor: [
+                        '#3b82f6', // IT - Blue
+                        '#10b981', // Keuangan - Green
+                        '#8b5cf6', // Marketing - Purple
+                        '#f59e0b', // SDM - Amber
+                        '#64748b'  // Ops - Slate
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
+                        }
+                    }
+                },
+                cutout: '75%', // Thinner ring
+            }
+        });
+    </script>
+</body>
+</html>
