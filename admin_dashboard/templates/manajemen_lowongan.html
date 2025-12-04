@@ -1,0 +1,608 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Manajemen Data - MagangHub Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Tab Active State */
+    .tab-active {
+        border-bottom: 2px solid #2563eb;
+        color: #2563eb;
+        font-weight: 600;
+    }
+    .tab-inactive {
+        border-bottom: 2px solid transparent;
+        color: #64748b;
+    }
+    .tab-inactive:hover {
+        color: #334155;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    .z-110 {
+        z-index: 110;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- Tab Navigation -->
+    <div class="mb-6 border-b border-slate-200">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <button onclick="switchTab('lowongan')" id="tab-lowongan" class="tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                <i data-lucide="briefcase" class="w-4 h-4"></i> Data Lowongan
+            </button>
+            <button onclick="switchTab('dept')" id="tab-dept" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                <i data-lucide="building-2" class="w-4 h-4"></i> Master Departemen
+            </button>
+        </nav>
+    </div>
+
+    <!-- SECTION 1: Data Lowongan -->
+    <div id="content-lowongan" class="space-y-6">
+        <!-- Toolbar -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="relative w-full sm:w-72">
+                <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="text" id="searchLowongan" onkeyup="searchLowongan(this.value)" placeholder="Cari posisi magang..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            </div>
+            <button onclick="openModal('modalLowongan')" class="w-full sm:w-auto px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i> Tambah Lowongan
+            </button>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white rounded-xl card-shadow border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-600">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-4 font-semibold">Posisi</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Departemen</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Periode</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Status</th>
+                            <th scope="col" class="px-6 py-4 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <!-- Data will be loaded via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="bg-white px-6 py-3 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-sm text-slate-500">Menampilkan 1-3 dari 12 data</span>
+                <div class="flex gap-1">
+                    <button class="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 text-sm text-slate-600">Prev</button>
+                    <button class="px-3 py-1 bg-primary-50 border border-primary-100 text-primary-600 rounded text-sm font-medium">1</button>
+                    <button class="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 text-sm text-slate-600">2</button>
+                    <button class="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 text-sm text-slate-600">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: Master Departemen -->
+    <div id="content-dept" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="relative w-full sm:w-72">
+                 <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="text" id="searchDepartemen" onkeyup="searchDepartemen(this.value)" placeholder="Cari departemen..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            </div>
+            <button onclick="openModal('modalDept')" class="w-full sm:w-auto px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i> Tambah Departemen
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Table Dept -->
+            <div class="bg-white rounded-xl card-shadow border border-slate-100 overflow-hidden">
+                <table class="w-full text-sm text-left text-slate-600">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">ID</th>
+                            <th class="px-6 py-4 font-semibold">Nama Departemen</th>
+                            <th class="px-6 py-4 font-semibold text-center">Jml Lowongan</th>
+                            <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <!-- Data will be loaded via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Illustration / Info -->
+            <div class="hidden lg:flex flex-col items-center justify-center p-8 bg-white rounded-xl border border-dashed border-slate-300 text-center">
+                <div class="bg-slate-50 p-4 rounded-full mb-4">
+                    <i data-lucide="building-2" class="w-8 h-8 text-slate-400"></i>
+                </div>
+                <h3 class="text-lg font-medium text-slate-800">Manajemen Departemen</h3>
+                <p class="text-slate-500 text-sm mt-2 max-w-xs">
+                    Tambahkan departemen baru untuk mengelompokkan lowongan magang. Departemen yang dihapus akan menonaktifkan lowongan terkait.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Tambah/Edit Lowongan -->
+    <div id="modalLowongan" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onclick="closeModal('modalLowongan')"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="w-full">
+                                <h3 class="text-lg font-semibold leading-6 text-slate-900 mb-4" id="modalLowonganTitle">Form Lowongan Magang</h3>
+                                <form class="space-y-4" onsubmit="event.preventDefault(); saveLowongan();">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Posisi <span class="text-red-500">*</span></label>
+                                        <input type="text" id="posisiInput" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2" placeholder="Cth: UI/UX Designer" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Departemen <span class="text-red-500">*</span></label>
+                                        <select id="departemenSelect" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 bg-white" required>
+                                            <option value="">Pilih Departemen</option>
+                                        </select>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
+                                            <input type="date" id="tanggalMulaiInput" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2" required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Selesai <span class="text-red-500">*</span></label>
+                                            <input type="date" id="tanggalSelesaiInput" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2" required>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Deskripsi Singkat</label>
+                                        <textarea rows="3" id="deskripsiInput" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2" placeholder="Jelaskan tugas dan tanggung jawab..."></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-slate-100">
+                        <button type="button" onclick="saveLowongan()" class="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto">Simpan</button>
+                        <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto" onclick="closeModal('modalLowongan')">Batal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Tambah/Edit Departemen -->
+    <div id="modalDept" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onclick="closeModal('modalDept')"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-slate-200">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg font-semibold leading-6 text-slate-900 mb-4" id="modalDeptTitle">Master Departemen</h3>
+                        <form class="space-y-4" onsubmit="event.preventDefault(); saveDepartemen();">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Departemen <span class="text-red-500">*</span></label>
+                                <input type="text" id="namaDeptInput" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2" placeholder="Cth: Human Resources" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-slate-100">
+                        <button type="button" onclick="saveDepartemen()" class="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto">Simpan</button>
+                        <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto" onclick="closeModal('modalDept')">Batal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentEditId = null;
+    let currentEditType = null; // 'lowongan' atau 'dept'
+    let allDepartemen = [];
+
+    // Load data saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        loadLowongan();
+        loadDepartemen();
+        loadDepartemenOptions();
+    });
+
+    // === LOWONGAN FUNCTIONS ===
+    async function loadLowongan(search = '') {
+        try {
+            const response = await fetch(`/dashboard/api/lowongan/?search=${search}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                renderLowonganTable(result.data);
+            }
+        } catch (error) {
+            console.error('Error loading lowongan:', error);
+            showToast('Gagal memuat data lowongan', 'error');
+        }
+    }
+
+    function renderLowonganTable(data) {
+        const tbody = document.querySelector('#content-lowongan tbody');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Tidak ada data lowongan</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.map(item => {
+            const statusColor = item.status_class === 'active' ? 'bg-green-500' : 'bg-slate-300';
+            const statusText = item.status_class === 'active' ? 'text-slate-700' : 'text-slate-400';
+            const rowBg = item.status_class === 'active' ? '' : 'bg-slate-50/50';
+            
+            // Warna badge departemen (random dari beberapa pilihan)
+            const colors = ['blue', 'green', 'purple', 'orange', 'pink'];
+            const color = colors[item.departemen_id % colors.length];
+            
+            return `
+                <tr class="hover:bg-slate-50 transition-colors ${rowBg}">
+                    <td class="px-6 py-4 font-medium ${item.status_class === 'active' ? 'text-slate-900' : 'text-slate-500'}">${item.posisi}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-${color}-50 text-${color}-700">
+                            ${item.departemen}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 ${item.status_class === 'active' ? 'text-slate-500' : 'text-slate-400'}">${item.periode}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <div class="h-2 w-2 rounded-full ${statusColor}"></div>
+                            <span class="${statusText}">${item.status}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-right flex justify-end gap-2">
+                        <button onclick="editLowongan(${item.id})" class="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-primary-600">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteLowongan(${item.id}, '${item.posisi}')" class="p-1.5 hover:bg-red-50 rounded text-slate-400 hover:text-red-600">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        lucide.createIcons();
+    }
+
+    async function loadDepartemenOptions() {
+        try {
+            const response = await fetch('/dashboard/api/departemen/');
+            const result = await response.json();
+            
+            if (result.success) {
+                allDepartemen = result.data;
+                const select = document.getElementById('departemenSelect');
+                select.innerHTML = result.data.map(dept => 
+                    `<option value="${dept.id}">${dept.nama_dept}</option>`
+                ).join('');
+            }
+        } catch (error) {
+            console.error('Error loading departemen options:', error);
+        }
+    }
+
+    async function editLowongan(id) {
+        try {
+            const response = await fetch(`/dashboard/api/lowongan/${id}/`);
+            const result = await response.json();
+            
+            if (result.success) {
+                currentEditId = id;
+                currentEditType = 'lowongan';
+                
+                document.getElementById('modalLowonganTitle').textContent = 'Edit Lowongan Magang';
+                document.getElementById('posisiInput').value = result.data.posisi;
+                document.getElementById('deskripsiInput').value = result.data.deskripsi;
+                document.getElementById('tanggalMulaiInput').value = result.data.tanggal_mulai;
+                document.getElementById('tanggalSelesaiInput').value = result.data.tanggal_selesai;
+                document.getElementById('departemenSelect').value = result.data.departemen_id;
+                
+                openModal('modalLowongan');
+            }
+        } catch (error) {
+            console.error('Error loading lowongan detail:', error);
+            showToast('Gagal memuat detail lowongan', 'error');
+        }
+    }
+
+    async function deleteLowongan(id, posisi) {
+        if (!confirm(`Apakah Anda yakin ingin menghapus lowongan "${posisi}"?`)) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/dashboard/api/lowongan/${id}/delete/`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast('Lowongan berhasil dihapus', 'success');
+                loadLowongan();
+            } else {
+                showToast(result.message || 'Gagal menghapus lowongan', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting lowongan:', error);
+            showToast('Gagal menghapus lowongan', 'error');
+        }
+    }
+
+    async function saveLowongan() {
+        const posisi = document.getElementById('posisiInput').value;
+        const deskripsi = document.getElementById('deskripsiInput').value;
+        const tanggalMulai = document.getElementById('tanggalMulaiInput').value;
+        const tanggalSelesai = document.getElementById('tanggalSelesaiInput').value;
+        const departemenId = document.getElementById('departemenSelect').value;
+        
+        if (!posisi || !tanggalMulai || !tanggalSelesai || !departemenId) {
+            showToast('Mohon lengkapi semua field yang wajib', 'error');
+            return;
+        }
+        
+        const data = {
+            posisi,
+            deskripsi,
+            tanggal_mulai: tanggalMulai,
+            tanggal_selesai: tanggalSelesai,
+            departemen_id: parseInt(departemenId)
+        };
+        
+        try {
+            let url = '/dashboard/api/lowongan/create/';
+            let method = 'POST';
+            
+            if (currentEditId) {
+                url = `/dashboard/api/lowongan/${currentEditId}/update/`;
+                method = 'PUT';
+            }
+            
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast(result.message, 'success');
+                closeModal('modalLowongan');
+                loadLowongan();
+                resetLowonganForm();
+            } else {
+                showToast(result.message || 'Gagal menyimpan lowongan', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving lowongan:', error);
+            showToast('Gagal menyimpan lowongan', 'error');
+        }
+    }
+
+    function resetLowonganForm() {
+        currentEditId = null;
+        currentEditType = null;
+        document.getElementById('modalLowonganTitle').textContent = 'Form Lowongan Magang';
+        document.getElementById('posisiInput').value = '';
+        document.getElementById('deskripsiInput').value = '';
+        document.getElementById('tanggalMulaiInput').value = '';
+        document.getElementById('tanggalSelesaiInput').value = '';
+        document.getElementById('departemenSelect').selectedIndex = 0;
+    }
+
+    // === DEPARTEMEN FUNCTIONS ===
+    async function loadDepartemen(search = '') {
+        try {
+            const response = await fetch(`/dashboard/api/departemen/?search=${search}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                renderDepartemenTable(result.data);
+            }
+        } catch (error) {
+            console.error('Error loading departemen:', error);
+            showToast('Gagal memuat data departemen', 'error');
+        }
+    }
+
+    function renderDepartemenTable(data) {
+        const tbody = document.querySelector('#content-dept tbody');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Tidak ada data departemen</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.map((item, index) => `
+            <tr class="hover:bg-slate-50">
+                <td class="px-6 py-4 text-slate-400">#${String(item.id).padStart(3, '0')}</td>
+                <td class="px-6 py-4 font-medium text-slate-900">${item.nama_dept}</td>
+                <td class="px-6 py-4 text-center">
+                    <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-bold">${item.jumlah_lowongan}</span>
+                </td>
+                <td class="px-6 py-4 text-right flex justify-end gap-2">
+                    <button onclick="editDepartemen(${item.id})" class="text-primary-600 hover:underline text-sm">Edit</button>
+                    ${item.jumlah_lowongan === 0 ? `
+                        <button onclick="deleteDepartemen(${item.id}, '${item.nama_dept}')" class="text-red-600 hover:underline text-sm ml-2">Hapus</button>
+                    ` : ''}
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function editDepartemen(id) {
+        try {
+            const response = await fetch(`/dashboard/api/departemen/${id}/`);
+            const result = await response.json();
+            
+            if (result.success) {
+                currentEditId = id;
+                currentEditType = 'dept';
+                
+                document.getElementById('modalDeptTitle').textContent = 'Edit Departemen';
+                document.getElementById('namaDeptInput').value = result.data.nama_dept;
+                
+                openModal('modalDept');
+            }
+        } catch (error) {
+            console.error('Error loading departemen detail:', error);
+            showToast('Gagal memuat detail departemen', 'error');
+        }
+    }
+
+    async function deleteDepartemen(id, nama) {
+        if (!confirm(`Apakah Anda yakin ingin menghapus departemen "${nama}"?`)) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/dashboard/api/departemen/${id}/delete/`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast('Departemen berhasil dihapus', 'success');
+                loadDepartemen();
+                loadDepartemenOptions();
+            } else {
+                showToast(result.message || 'Gagal menghapus departemen', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting departemen:', error);
+            showToast('Gagal menghapus departemen', 'error');
+        }
+    }
+
+    async function saveDepartemen() {
+        const namaDept = document.getElementById('namaDeptInput').value;
+        
+        if (!namaDept) {
+            showToast('Nama departemen wajib diisi', 'error');
+            return;
+        }
+        
+        const data = { nama_dept: namaDept };
+        
+        try {
+            let url = '/dashboard/api/departemen/create/';
+            let method = 'POST';
+            
+            if (currentEditId && currentEditType === 'dept') {
+                url = `/dashboard/api/departemen/${currentEditId}/update/`;
+                method = 'PUT';
+            }
+            
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast(result.message, 'success');
+                closeModal('modalDept');
+                loadDepartemen();
+                loadDepartemenOptions();
+                resetDepartemenForm();
+            } else {
+                showToast(result.message || 'Gagal menyimpan departemen', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving departemen:', error);
+            showToast('Gagal menyimpan departemen', 'error');
+        }
+    }
+
+    function resetDepartemenForm() {
+        currentEditId = null;
+        currentEditType = null;
+        document.getElementById('modalDeptTitle').textContent = 'Master Departemen';
+        document.getElementById('namaDeptInput').value = '';
+    }
+
+    // === SEARCH FUNCTIONS ===
+    let searchTimeout;
+    function searchLowongan(value) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            loadLowongan(value);
+        }, 300);
+    }
+
+    function searchDepartemen(value) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            loadDepartemen(value);
+        }, 300);
+    }
+
+    // Tab Switching Logic
+    function switchTab(tabName) {
+        // Hide all content
+        document.getElementById('content-lowongan').classList.add('hidden');
+        document.getElementById('content-dept').classList.add('hidden');
+        
+        // Reset Tab Styles
+        document.getElementById('tab-lowongan').className = "tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+        document.getElementById('tab-dept').className = "tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+
+        // Show selected content & Activate Tab
+        document.getElementById(`content-${tabName}`).classList.remove('hidden');
+        document.getElementById(`tab-${tabName}`).className = "tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+        
+        // Re-initialize icons after tab switch
+        lucide.createIcons();
+    }
+
+    // Modal Logic
+    function openModal(modalId) {
+        if (modalId === 'modalLowongan' && !currentEditId) {
+            resetLowonganForm();
+        }
+        if (modalId === 'modalDept' && !currentEditId) {
+            resetDepartemenForm();
+        }
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        if (modalId === 'modalLowongan') {
+            resetLowonganForm();
+        }
+        if (modalId === 'modalDept') {
+            resetDepartemenForm();
+        }
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-5 right-5 z-110 px-6 py-3 rounded-lg shadow-lg text-white text-sm font-medium transition-all transform translate-x-0 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.transform = 'translateX(400px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,233 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Dashboard - MagangHub Admin{% endblock %}
+
+{% block content %}
+    <!-- Stats Overview Cards -->
+    <div class="mb-8">
+        {% include 'layouts/stats_cards.html' %}
+    </div>
+
+    <!-- Charts Section -->
+    <div class="mb-8">
+        {% include 'layouts/charts.html' %}
+    </div>
+
+    <!-- Recent Activity Table -->
+    {% include 'layouts/recent_applicants_table.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Chart instances
+    let trendChart = null;
+    let deptChart = null;
+
+    // Load Statistics
+    async function loadStatistics() {
+        try {
+            const response = await fetch('/dashboard/api/stats/');
+            const result = await response.json();
+            
+            if (result.success) {
+                const data = result.data;
+                document.getElementById('totalPendaftar').textContent = data.total_pendaftar.toLocaleString();
+                document.getElementById('lowonganAktif').textContent = data.lowongan_aktif;
+                document.getElementById('deptAktif').textContent = data.dept_aktif;
+                document.getElementById('menungguReview').textContent = data.menunggu_review;
+                document.getElementById('tingkatPenerimaan').textContent = data.tingkat_penerimaan + '%';
+                document.getElementById('totalApproved').textContent = data.total_approved;
+                
+                // Update perubahan pendaftar
+                const perubahanElem = document.getElementById('perubahanPendaftar');
+                const perubahan = data.persentase_perubahan;
+                if (perubahan >= 0) {
+                    perubahanElem.className = 'text-green-500 font-medium flex items-center gap-1';
+                    perubahanElem.innerHTML = `<i data-lucide="trending-up" class="w-3 h-3"></i> +${perubahan}%`;
+                } else {
+                    perubahanElem.className = 'text-red-500 font-medium flex items-center gap-1';
+                    perubahanElem.innerHTML = `<i data-lucide="trending-down" class="w-3 h-3"></i> ${perubahan}%`;
+                }
+                lucide.createIcons();
+            }
+        } catch (error) {
+            console.error('Error loading statistics:', error);
+        }
+    }
+
+    // Load Trend Chart
+    async function loadTrendChart() {
+        try {
+            const response = await fetch('/dashboard/api/trend/');
+            const result = await response.json();
+            
+            if (result.success) {
+                const ctxTrend = document.getElementById('trendChart').getContext('2d');
+                trendChart = new Chart(ctxTrend, {
+                    type: 'line',
+                    data: {
+                        labels: result.data.labels,
+                        datasets: [{
+                            label: 'Pendaftar Masuk',
+                            data: result.data.data,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#3b82f6',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [2, 4], color: '#f1f5f9' },
+                                ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error loading trend chart:', error);
+        }
+    }
+
+    // Load Department Chart
+    async function loadDepartmentChart() {
+        try {
+            const response = await fetch('/dashboard/api/department/');
+            const result = await response.json();
+            
+            if (result.success) {
+                const ctxDept = document.getElementById('deptChart').getContext('2d');
+                const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#64748b', '#ec4899', '#06b6d4'];
+                
+                deptChart = new Chart(ctxDept, {
+                    type: 'doughnut',
+                    data: {
+                        labels: result.data.labels,
+                        datasets: [{
+                            data: result.data.data,
+                            backgroundColor: colors.slice(0, result.data.labels.length),
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
+                                }
+                            }
+                        },
+                        cutout: '75%',
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error loading department chart:', error);
+        }
+    }
+
+    // Load Recent Applicants
+    async function loadRecentApplicants() {
+        try {
+            const response = await fetch('/dashboard/api/recent-applicants/?limit=10');
+            const result = await response.json();
+            
+            if (result.success) {
+                const tbody = document.getElementById('recentApplicantsBody');
+                
+                if (result.data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+                                Belum ada data pendaftar
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                const avatarColors = {
+                    'pending': 'bg-amber-100 text-amber-600',
+                    'approved': 'bg-green-100 text-green-600',
+                    'rejected': 'bg-red-100 text-red-600'
+                };
+                
+                const statusBadges = {
+                    'pending': 'bg-amber-100 text-amber-800 border-amber-200',
+                    'approved': 'bg-green-100 text-green-800 border-green-200',
+                    'rejected': 'bg-red-100 text-red-800 border-red-200'
+                };
+                
+                const statusText = {
+                    'pending': 'Pending',
+                    'approved': 'Approved',
+                    'rejected': 'Rejected'
+                };
+                
+                tbody.innerHTML = result.data.map(applicant => `
+                    <tr class="bg-white hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full ${avatarColors[applicant.status]} flex items-center justify-center text-xs font-bold">
+                                ${applicant.initials}
+                            </div>
+                            ${applicant.name}
+                        </td>
+                        <td class="px-6 py-4">${applicant.position}</td>
+                        <td class="px-6 py-4">${applicant.university}</td>
+                        <td class="px-6 py-4">${applicant.date}</td>
+                        <td class="px-6 py-4">
+                            <span class="${statusBadges[applicant.status]} text-xs font-medium px-2.5 py-0.5 rounded-full border">
+                                ${statusText[applicant.status]}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-slate-400 hover:text-primary-600 transition-colors">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                lucide.createIcons();
+            }
+        } catch (error) {
+            console.error('Error loading recent applicants:', error);
+        }
+    }
+
+    // Initialize Dashboard
+    async function initDashboard() {
+        await loadStatistics();
+        await loadTrendChart();
+        await loadDepartmentChart();
+        await loadRecentApplicants();
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+{% endblock %}

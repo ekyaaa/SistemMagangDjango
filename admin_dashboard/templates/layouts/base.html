@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MagangHub Admin{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        secondary: '#64748b',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f8fafc;
+        }
+        .sidebar-active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border-right: 3px solid #2563eb;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- Wrapper -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        {% include 'layouts/sidebar.html' %}
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Header -->
+            {% include 'layouts/header.html' %}
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

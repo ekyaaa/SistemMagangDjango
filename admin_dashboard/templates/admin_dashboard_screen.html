@@ -1,135 +1,13 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MagangHub Admin - Dashboard</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
+{% extends "layouts/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_head %}
     <!-- Chart.js for Data Visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        },
-                        secondary: '#64748b',
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        body {
-            background-color: #f8fafc; /* Slate 50 - Very light grey for eye comfort */
-        }
-        .sidebar-active {
-            background-color: #eff6ff;
-            color: #2563eb;
-            border-right: 3px solid #2563eb;
-        }
-        .card-shadow {
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-        }
-    </style>
-</head>
-<body class="text-slate-800 antialiased">
-
-    <!-- Wrapper -->
-    <div class="flex h-screen overflow-hidden">
-
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex md:flex-col justify-between z-10">
-            <div>
-                <!-- Logo -->
-                <div class="h-16 flex items-center px-6 border-b border-slate-100">
-                    <div class="flex items-center gap-2 font-bold text-xl text-slate-800">
-                        <div class="bg-primary-600 p-1.5 rounded text-white">
-                            <i data-lucide="briefcase" class="w-5 h-5"></i>
-                        </div>
-                        Magang<span class="text-primary-600">Hub</span>
-                    </div>
-                </div>
-
-                <!-- Navigation -->
-                <nav class="mt-6 px-3 space-y-1">
-                    <a href="#" class="sidebar-active flex items-center gap-3 px-3 py-3 text-sm font-medium rounded-md transition-colors">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                        Dashboard
-                    </a>
-                    <a href="admin_data.html" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
-                        <i data-lucide="database" class="w-5 h-5"></i>
-                        Manajemen Data
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
-                        <i data-lucide="users" class="w-5 h-5"></i>
-                        Daftar Pendaftar
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
-                        <i data-lucide="settings" class="w-5 h-5"></i>
-                        Pengaturan
-                    </a>
-                </nav>
-            </div>
-
-            <!-- Profile Bottom -->
-            <div class="p-4 border-t border-slate-100">
-                <div class="flex items-center gap-3">
-                    <img src="https://ui-avatars.com/api/?name=Admin+Magang&background=eff6ff&color=2563eb" class="w-10 h-10 rounded-full border border-slate-200">
-                    <div>
-                        <p class="text-sm font-semibold text-slate-700">Administrator</p>
-                        <p class="text-xs text-slate-500">admin@maganghub.id</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            
-            <!-- Top Header -->
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-8">
-                <div class="flex items-center gap-4">
-                    <button class="md:hidden text-slate-500 hover:text-slate-700">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
-                    </button>
-                    <h1 class="text-xl font-semibold text-slate-800" id="greeting">Dashboard</h1>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <!-- Notifications -->
-                    <button class="relative p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-colors">
-                        <i data-lucide="bell" class="w-5 h-5"></i>
-                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                    </button>
-                    
-                    <div class="h-8 w-px bg-slate-200"></div>
-
-                    <button class="text-sm font-medium text-slate-600 hover:text-slate-900">Logout</button>
-                </div>
-            </header>
-
-            <!-- Scrollable Content -->
+{% block content %}
             <main class="flex-1 overflow-y-auto p-6 lg:p-8">
                 
                 <!-- Stats Overview Cards -->
@@ -139,15 +17,15 @@
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <p class="text-sm font-medium text-slate-500">Total Pendaftar</p>
-                                <h3 class="text-3xl font-bold text-slate-800 mt-1">1,248</h3>
+                                <h3 id="totalPendaftar" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
                             </div>
                             <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
                                 <i data-lucide="users" class="w-5 h-5"></i>
                             </div>
                         </div>
                         <div class="flex items-center text-sm">
-                            <span class="text-green-500 font-medium flex items-center gap-1">
-                                <i data-lucide="trending-up" class="w-3 h-3"></i> +12%
+                            <span id="perubahanPendaftar" class="text-green-500 font-medium flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +0%
                             </span>
                             <span class="text-slate-400 ml-2">dari bulan lalu</span>
                         </div>
@@ -158,7 +36,7 @@
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <p class="text-sm font-medium text-slate-500">Lowongan Aktif</p>
-                                <h3 class="text-3xl font-bold text-slate-800 mt-1">24</h3>
+                                <h3 id="lowonganAktif" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
                             </div>
                             <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
                                 <i data-lucide="briefcase" class="w-5 h-5"></i>
@@ -166,7 +44,7 @@
                         </div>
                         <div class="flex items-center text-sm">
                             <span class="text-slate-500 font-medium">
-                                4 Departemen
+                                <span id="deptAktif">0</span> Departemen
                             </span>
                             <span class="text-slate-400 ml-2">sedang membuka</span>
                         </div>
@@ -177,7 +55,7 @@
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <p class="text-sm font-medium text-slate-500">Menunggu Review</p>
-                                <h3 class="text-3xl font-bold text-slate-800 mt-1">86</h3>
+                                <h3 id="menungguReview" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
                             </div>
                             <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
                                 <i data-lucide="clock" class="w-5 h-5"></i>
@@ -193,7 +71,7 @@
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <p class="text-sm font-medium text-slate-500">Tingkat Penerimaan</p>
-                                <h3 class="text-3xl font-bold text-slate-800 mt-1">18%</h3>
+                                <h3 id="tingkatPenerimaan" class="text-3xl font-bold text-slate-800 mt-1">0%</h3>
                             </div>
                             <div class="p-2 bg-green-50 text-green-600 rounded-lg">
                                 <i data-lucide="check-circle" class="w-5 h-5"></i>
@@ -201,7 +79,7 @@
                         </div>
                         <div class="flex items-center text-sm">
                             <span class="text-slate-400">Total Diterima: </span>
-                            <span class="text-slate-700 font-semibold ml-1">224</span>
+                            <span id="totalApproved" class="text-slate-700 font-semibold ml-1">0</span>
                         </div>
                     </div>
                 </div>
@@ -236,8 +114,8 @@
                 <!-- Recent Activity Table -->
                 <div class="bg-white rounded-xl card-shadow border border-slate-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                        <h3 class="font-semibold text-slate-800">Pendaftar Terbaru (Pending Review)</h3>
-                        <button class="text-sm text-primary-600 hover:text-primary-700 font-medium">Lihat Semua</button>
+                        <h3 class="font-semibold text-slate-800">Pendaftar Terbaru</h3>
+                        <a href="/dashboard/manajemen-pendaftar/" class="text-sm text-primary-600 hover:text-primary-700 font-medium">Lihat Semua</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-slate-600">
@@ -251,165 +129,606 @@
                                     <th scope="col" class="px-6 py-3 text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr class="bg-white hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">BP</div>
-                                        Budi Pratama
-                                    </td>
-                                    <td class="px-6 py-4">IT Support Intern</td>
-                                    <td class="px-6 py-4">Univ. Indonesia</td>
-                                    <td class="px-6 py-4">04 Des 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-amber-200">Pending</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                    </td>
-                                </tr>
-                                <tr class="bg-white hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-bold">SA</div>
-                                        Siti Aminah
-                                    </td>
-                                    <td class="px-6 py-4">Digital Marketing</td>
-                                    <td class="px-6 py-4">Univ. Gadjah Mada</td>
-                                    <td class="px-6 py-4">04 Des 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-amber-200">Pending</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                    </td>
-                                </tr>
-                                <tr class="bg-white hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold">RA</div>
-                                        Rizky Aditya
-                                    </td>
-                                    <td class="px-6 py-4">Finance Admin</td>
-                                    <td class="px-6 py-4">Univ. Brawijaya</td>
-                                    <td class="px-6 py-4">03 Des 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-green-200">Approved</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                    </td>
-                                </tr>
-                                <tr class="bg-white hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xs font-bold">DW</div>
-                                        Dewi Wulandari
-                                    </td>
-                                    <td class="px-6 py-4">HR Recruiter</td>
-                                    <td class="px-6 py-4">ITB</td>
-                                    <td class="px-6 py-4">02 Des 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full border border-red-200">Rejected</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button class="text-slate-400 hover:text-primary-600 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                    </td>
-                                </tr>
+                            <tbody id="recentApplicantsBody" class="divide-y divide-slate-100">
+                                <!-- Data akan dimuat via JavaScript -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
             </main>
+
+    <!-- MODAL REVIEW (Pending - dengan action) -->
+    <div id="modalReview" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeModal('modalReview')"></div>
+        
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-200">
+                    
+                    <!-- Modal Header -->
+                    <div class="bg-gradient-to-r from-slate-50 to-white px-6 py-4 border-b border-slate-200 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-800" id="modalReviewName">-</h3>
+                            <p class="text-sm text-slate-500" id="modalReviewPosition">-</p>
+                        </div>
+                        <button onclick="closeModal('modalReview')" class="text-slate-400 hover:text-slate-600">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="px-6 py-6 max-h-[70vh] overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Personal Info -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-semibold text-slate-700 pb-2 border-b border-slate-200">Data Pribadi</h4>
+                                <div id="modal-personal-info" class="space-y-3"></div>
+                            </div>
+                            
+                            <!-- Academic Info -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-semibold text-slate-700 pb-2 border-b border-slate-200">Data Akademik</h4>
+                                <div id="modal-academic-info" class="space-y-3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer (Actions) -->
+                    <div class="bg-slate-50 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-slate-200">
+                        <p class="text-sm text-slate-500">
+                            Periksa data dengan teliti sebelum mengambil keputusan
+                        </p>
+                        <div class="flex gap-3 w-full sm:w-auto">
+                            <button type="button" onclick="handleDecision('rejected')" class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors">
+                                Tolak
+                            </button>
+                            <button type="button" onclick="handleDecision('approved')" class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
+                                Terima
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VIEW (History - view only, no action buttons) -->
+    <div id="modalView" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-view-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeModal('modalView')"></div>
+        
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-200">
+                    
+                    <!-- Modal Header -->
+                    <div class="bg-gradient-to-r from-slate-50 to-white px-6 py-4 border-b border-slate-200 flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-lg font-semibold text-slate-800" id="modalViewName">-</h3>
+                                <span id="modalViewStatus" class="px-2 py-0.5 rounded-full text-xs font-medium">-</span>
+                            </div>
+                            <p class="text-sm text-slate-500" id="modalViewPosition">-</p>
+                        </div>
+                        <button onclick="closeModal('modalView')" class="text-slate-400 hover:text-slate-600">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="px-6 py-6 max-h-[70vh] overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Personal Info -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-semibold text-slate-700 pb-2 border-b border-slate-200">Data Pribadi</h4>
+                                <div id="modalView-personal-info" class="space-y-3"></div>
+                            </div>
+                            
+                            <!-- Academic Info -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-semibold text-slate-700 pb-2 border-b border-slate-200">Data Akademik</h4>
+                                <div id="modalView-academic-info" class="space-y-3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer (No action buttons) -->
+                    <div class="bg-slate-50 px-6 py-4 flex justify-end border-t border-slate-200">
+                        <button type="button" onclick="closeModal('modalView')" class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        // Chart instances
+        let trendChart = null;
+        let deptChart = null;
+        let currentTransaksiId = null;
 
-        // Greeting Logic
-        const hour = new Date().getHours();
-        const greetingElement = document.getElementById('greeting');
-        let greetingText = 'Selamat Pagi';
-        if (hour >= 12 && hour < 15) greetingText = 'Selamat Siang';
-        else if (hour >= 15 && hour < 18) greetingText = 'Selamat Sore';
-        else if (hour >= 18) greetingText = 'Selamat Malam';
-        greetingElement.textContent = `${greetingText}, Admin!`;
+        // Load Statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/dashboard/api/stats/');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    document.getElementById('totalPendaftar').textContent = data.total_pendaftar.toLocaleString();
+                    document.getElementById('lowonganAktif').textContent = data.lowongan_aktif;
+                    document.getElementById('deptAktif').textContent = data.dept_aktif;
+                    document.getElementById('menungguReview').textContent = data.menunggu_review;
+                    document.getElementById('tingkatPenerimaan').textContent = data.tingkat_penerimaan + '%';
+                    document.getElementById('totalApproved').textContent = data.total_approved;
+                    
+                    // Update perubahan pendaftar
+                    const perubahanElem = document.getElementById('perubahanPendaftar');
+                    const perubahan = data.persentase_perubahan;
+                    if (perubahan >= 0) {
+                        perubahanElem.className = 'text-green-500 font-medium flex items-center gap-1';
+                        perubahanElem.innerHTML = `<i data-lucide="trending-up" class="w-3 h-3"></i> +${perubahan}%`;
+                    } else {
+                        perubahanElem.className = 'text-red-500 font-medium flex items-center gap-1';
+                        perubahanElem.innerHTML = `<i data-lucide="trending-down" class="w-3 h-3"></i> ${perubahan}%`;
+                    }
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
 
-        // --- Chart 1: Trend Pendaftaran (Line Chart) ---
-        const ctxTrend = document.getElementById('trendChart').getContext('2d');
-        new Chart(ctxTrend, {
-            type: 'line',
-            data: {
-                labels: ['1 Nov', '5 Nov', '10 Nov', '15 Nov', '20 Nov', '25 Nov', '30 Nov', '4 Des'],
-                datasets: [{
-                    label: 'Pendaftar Masuk',
-                    data: [12, 19, 15, 25, 22, 30, 28, 35],
-                    borderColor: '#3b82f6', // primary-500
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4, // Smooth curves
-                    fill: true,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#3b82f6',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { borderDash: [2, 4], color: '#f1f5f9' },
-                        ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+        // Load Trend Chart
+        async function loadTrendChart() {
+            try {
+                const response = await fetch('/dashboard/api/trend/');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const ctxTrend = document.getElementById('trendChart').getContext('2d');
+                    trendChart = new Chart(ctxTrend, {
+                        type: 'line',
+                        data: {
+                            labels: result.data.labels,
+                            datasets: [{
+                                label: 'Pendaftar Masuk',
+                                data: result.data.data,
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#3b82f6',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { borderDash: [2, 4], color: '#f1f5f9' },
+                                    ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading trend chart:', error);
+            }
+        }
+
+        // Load Department Chart
+        async function loadDepartmentChart() {
+            try {
+                const response = await fetch('/dashboard/api/department/');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const ctxDept = document.getElementById('deptChart').getContext('2d');
+                    const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#64748b', '#ec4899', '#06b6d4'];
+                    
+                    deptChart = new Chart(ctxDept, {
+                        type: 'doughnut',
+                        data: {
+                            labels: result.data.labels,
+                            datasets: [{
+                                data: result.data.data,
+                                backgroundColor: colors.slice(0, result.data.labels.length),
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        usePointStyle: true,
+                                        padding: 20,
+                                        font: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
+                                    }
+                                }
+                            },
+                            cutout: '75%',
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading department chart:', error);
+            }
+        }
+
+        // Load Recent Applicants
+        async function loadRecentApplicants() {
+            try {
+                const response = await fetch('/dashboard/api/recent-applicants/?limit=10');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const tbody = document.getElementById('recentApplicantsBody');
+                    
+                    if (result.data.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+                                    Belum ada data pendaftar
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    const avatarColors = {
+                        'pending': 'bg-amber-100 text-amber-600',
+                        'approved': 'bg-green-100 text-green-600',
+                        'rejected': 'bg-red-100 text-red-600'
+                    };
+                    
+                    const statusBadges = {
+                        'pending': 'bg-amber-100 text-amber-800 border-amber-200',
+                        'approved': 'bg-green-100 text-green-800 border-green-200',
+                        'rejected': 'bg-red-100 text-red-800 border-red-200'
+                    };
+                    
+                    const statusText = {
+                        'pending': 'Pending',
+                        'approved': 'Diterima',
+                        'rejected': 'Ditolak'
+                    };
+                    
+                    tbody.innerHTML = result.data.map(applicant => `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-slate-900">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full ${avatarColors[applicant.status]} flex items-center justify-center text-xs font-bold">
+                                        ${applicant.initials}
+                                    </div>
+                                    <div>${applicant.name}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">${applicant.position}</td>
+                            <td class="px-6 py-4">${applicant.university}</td>
+                            <td class="px-6 py-4">${applicant.date}</td>
+                            <td class="px-6 py-4">
+                                <span class="${statusBadges[applicant.status]} text-xs font-medium px-2.5 py-0.5 rounded-full border">
+                                    ${statusText[applicant.status]}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                ${applicant.status === 'pending' ? `
+                                    <button onclick="openReviewModal(${applicant.id_transaksi})" class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm">
+                                        Review Lamaran <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                    </button>
+                                ` : `
+                                    <button onclick="openViewModal(${applicant.id_transaksi})" class="p-2 text-slate-400 hover:text-primary-600 transition-colors" title="Lihat Detail">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                `}
+                            </td>
+                        </tr>
+                    `).join('');
+                    
+                    console.log('Loaded', result.data.length, 'applicants');
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Error loading recent applicants:', error);
+            }
+        }
+
+        // === MODAL FUNCTIONS ===
+        async function openReviewModal(idTransaksi) {
+            console.log('Opening review modal for:', idTransaksi);
+            currentTransaksiId = idTransaksi;
+            
+            try {
+                const response = await fetch(`/dashboard/api/pendaftar/detail/${idTransaksi}/`);
+                const result = await response.json();
+                console.log('Review modal data:', result);
+
+                if (result.success) {
+                    const data = result.data;
+                    
+                    // Set header
+                    document.getElementById('modalReviewName').textContent = data.nama;
+                    document.getElementById('modalReviewPosition').textContent = data.posisi;
+                    
+                    // Set personal info
+                    document.getElementById('modal-personal-info').innerHTML = `
+                        <div>
+                            <p class="text-xs text-slate-500">NIK</p>
+                            <p class="font-medium text-slate-800">${data.nik}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Jenis Kelamin</p>
+                            <p class="font-medium text-slate-800">${data.jenis_kelamin}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Tanggal Lahir</p>
+                            <p class="font-medium text-slate-800">${data.tanggal_lahir}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">No. Telepon</p>
+                            <p class="font-medium text-slate-800">${data.no_telp}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Alamat</p>
+                            <p class="font-medium text-slate-800 text-sm leading-relaxed">${data.alamat}</p>
+                        </div>
+                    `;
+                    
+                    // Set academic info
+                    document.getElementById('modal-academic-info').innerHTML = `
+                        <div>
+                            <p class="text-xs text-slate-500">Universitas</p>
+                            <p class="font-medium text-slate-800">${data.universitas}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Jurusan</p>
+                            <p class="font-medium text-slate-800">${data.jurusan}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">IPK</p>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-sm font-bold bg-green-50 text-green-700 border border-green-200">
+                                ${data.ipk || 'N/A'} ${data.ipk ? '/ 4.00' : ''}
+                            </span>
+                        </div>
+                        <div class="pt-4">
+                            <p class="text-xs text-slate-500 mb-2">Curriculum Vitae</p>
+                            ${data.cv_url ? `
+                            <a href="${data.cv_url}" target="_blank" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-primary-300 hover:shadow-sm transition-all group">
+                                <div class="bg-red-100 p-2 rounded text-red-600">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-700 group-hover:text-primary-700">${data.cv_filename}</p>
+                                    <p class="text-xs text-slate-400">PDF</p>
+                                </div>
+                                <i data-lucide="download" class="w-4 h-4 text-slate-400 group-hover:text-primary-600"></i>
+                            </a>
+                            ` : `
+                            <div class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50">
+                                <div class="bg-slate-200 p-2 rounded text-slate-400">
+                                    <i data-lucide="file-x" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-500">CV tidak tersedia</p>
+                                    <p class="text-xs text-slate-400">Belum diunggah</p>
+                                </div>
+                            </div>
+                            `}
+                        </div>
+                    `;
+                    
+                    lucide.createIcons();
+                    document.getElementById('modalReview').classList.remove('hidden');
+                } else {
+                    showToast(result.message || 'Gagal memuat detail', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading detail:', error);
+                showToast('Terjadi kesalahan saat memuat detail', 'error');
+            }
+        }
+
+        async function openViewModal(idTransaksi) {
+            console.log('Opening view modal for:', idTransaksi);
+            
+            try {
+                const response = await fetch(`/dashboard/api/pendaftar/detail/${idTransaksi}/`);
+                const result = await response.json();
+                console.log('View modal data:', result);
+
+                if (result.success) {
+                    const data = result.data;
+                    
+                    // Set header
+                    document.getElementById('modalViewName').textContent = data.nama;
+                    document.getElementById('modalViewPosition').textContent = data.posisi;
+                    
+                    // Set status badge
+                    const statusBadge = document.getElementById('modalViewStatus');
+                    if (data.status === 'approved') {
+                        statusBadge.className = 'px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200';
+                        statusBadge.textContent = 'Diterima';
+                    } else if (data.status === 'rejected') {
+                        statusBadge.className = 'px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200';
+                        statusBadge.textContent = 'Ditolak';
+                    }
+                    
+                    // Set personal info
+                    document.getElementById('modalView-personal-info').innerHTML = `
+                        <div>
+                            <p class="text-xs text-slate-500">NIK</p>
+                            <p class="font-medium text-slate-800">${data.nik}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Jenis Kelamin</p>
+                            <p class="font-medium text-slate-800">${data.jenis_kelamin}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Tanggal Lahir</p>
+                            <p class="font-medium text-slate-800">${data.tanggal_lahir}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">No. Telepon</p>
+                            <p class="font-medium text-slate-800">${data.no_telp}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Alamat</p>
+                            <p class="font-medium text-slate-800 text-sm leading-relaxed">${data.alamat}</p>
+                        </div>
+                    `;
+                    
+                    // Set academic info
+                    document.getElementById('modalView-academic-info').innerHTML = `
+                        <div>
+                            <p class="text-xs text-slate-500">Universitas</p>
+                            <p class="font-medium text-slate-800">${data.universitas}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Jurusan</p>
+                            <p class="font-medium text-slate-800">${data.jurusan}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">IPK</p>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-sm font-bold bg-green-50 text-green-700 border border-green-200">
+                                ${data.ipk || 'N/A'} ${data.ipk ? '/ 4.00' : ''}
+                            </span>
+                        </div>
+                        <div class="pt-4">
+                            <p class="text-xs text-slate-500 mb-2">Curriculum Vitae</p>
+                            ${data.cv_url ? `
+                            <a href="${data.cv_url}" target="_blank" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-primary-300 hover:shadow-sm transition-all group">
+                                <div class="bg-red-100 p-2 rounded text-red-600">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-700 group-hover:text-primary-700">${data.cv_filename}</p>
+                                    <p class="text-xs text-slate-400">PDF</p>
+                                </div>
+                                <i data-lucide="download" class="w-4 h-4 text-slate-400 group-hover:text-primary-600"></i>
+                            </a>
+                            ` : `
+                            <div class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50">
+                                <div class="bg-slate-200 p-2 rounded text-slate-400">
+                                    <i data-lucide="file-x" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-500">CV tidak tersedia</p>
+                                    <p class="text-xs text-slate-400">Belum diunggah</p>
+                                </div>
+                            </div>
+                            `}
+                        </div>
+                    `;
+                    
+                    lucide.createIcons();
+                    document.getElementById('modalView').classList.remove('hidden');
+                } else {
+                    showToast(result.message || 'Gagal memuat detail', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading detail:', error);
+                showToast('Terjadi kesalahan saat memuat detail', 'error');
+            }
+        }
+
+        async function handleDecision(status) {
+            if (!currentTransaksiId) return;
+            
+            const statusText = status === 'approved' ? 'menerima' : 'menolak';
+            if (!confirm(`Yakin ingin ${statusText} kandidat ini?`)) return;
+
+            try {
+                const response = await fetch(`/dashboard/api/pendaftar/${currentTransaksiId}/update-status/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
                     },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                    body: JSON.stringify({ status })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast(result.message || `Berhasil ${statusText} kandidat`, 'success');
+                    closeModal('modalReview');
+                    await loadRecentApplicants();
+                    await loadStatistics();
+                } else {
+                    showToast(result.message || `Gagal ${statusText} kandidat`, 'error');
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+                showToast('Terjadi kesalahan saat memproses', 'error');
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            currentTransaksiId = null;
+        }
+
+        // === UTILITY FUNCTIONS ===
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
                 }
             }
-        });
+            return cookieValue;
+        }
 
-        // --- Chart 2: Pendaftar per Departemen (Doughnut Chart) ---
-        const ctxDept = document.getElementById('deptChart').getContext('2d');
-        new Chart(ctxDept, {
-            type: 'doughnut',
-            data: {
-                labels: ['IT', 'Keuangan', 'Marketing', 'SDM', 'Operasional'],
-                datasets: [{
-                    data: [45, 20, 35, 15, 10],
-                    backgroundColor: [
-                        '#3b82f6', // IT - Blue
-                        '#10b981', // Keuangan - Green
-                        '#8b5cf6', // Marketing - Purple
-                        '#f59e0b', // SDM - Amber
-                        '#64748b'  // Ops - Slate
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20,
-                            font: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
-                        }
-                    }
-                },
-                cutout: '75%', // Thinner ring
-            }
-        });
+        function showToast(message, type = 'success') {
+            const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+            const toast = document.createElement('div');
+            toast.className = `fixed top-5 right-5 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-[110] transition-opacity`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // View applicant detail (for non-pending applicants) - REMOVED (replaced with openViewModal)
+
+        // Initialize Dashboard
+        async function initDashboard() {
+            await loadStatistics();
+            await loadTrendChart();
+            await loadDepartmentChart();
+            await loadRecentApplicants();
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,685 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Daftar Pendaftar - MagangHub Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tab-active {
+        border-bottom: 2px solid #2563eb;
+        color: #2563eb;
+        font-weight: 600;
+    }
+    .tab-inactive {
+        border-bottom: 2px solid transparent;
+        color: #64748b;
+    }
+    .tab-inactive:hover {
+        color: #334155;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    .z-110 {
+        z-index: 110;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- Tab Navigation -->
+    <div class="mb-6 border-b border-slate-200">
+        <nav class="-mb-px flex space-x-8">
+            <button onclick="switchTab('pending')" id="tab-pending" class="tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4"></i> Perlu Review <span id="pending-count" class="bg-amber-100 text-amber-700 py-0.5 px-2 rounded-full text-xs font-bold">0</span>
+            </button>
+            <button onclick="switchTab('history')" id="tab-history" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                <i data-lucide="archive" class="w-4 h-4"></i> Riwayat Pendaftaran
+            </button>
+        </nav>
+    </div>
+
+    <!-- TAB 1: PENDING (Actionable) -->
+    <div id="content-pending" class="space-y-6">
+        <div class="flex justify-between items-center">
+            <div class="relative w-full max-w-md">
+                <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="text" id="search-pending" placeholder="Cari nama atau posisi..." oninput="searchPending(this.value)" class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl card-shadow border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-600">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Nama Kandidat</th>
+                            <th class="px-6 py-4 font-semibold">Posisi Dilamar</th>
+                            <th class="px-6 py-4 font-semibold">Universitas / IPK</th>
+                            <th class="px-6 py-4 font-semibold">Tanggal Daftar</th>
+                            <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-tbody" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-slate-400">
+                                <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+                                Memuat data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: HISTORY (Read Only) -->
+    <div id="content-history" class="hidden space-y-6">
+        <div class="flex justify-between items-center gap-4">
+            <div class="relative w-full max-w-md">
+                <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="text" id="search-history" placeholder="Cari riwayat pendaftar..." oninput="searchHistory(this.value)" class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </div>
+            <select id="filter-status" onchange="loadHistory()" class="text-sm border-slate-200 rounded-lg text-slate-600 focus:ring-primary-500 focus:border-primary-500 p-2 bg-white border">
+                <option value="">Semua Status</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+
+        <div class="bg-white rounded-xl card-shadow border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-600">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Nama</th>
+                            <th class="px-6 py-4 font-semibold">Posisi</th>
+                            <th class="px-6 py-4 font-semibold">Tanggal</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                            <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-slate-400">
+                                <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+                                Memuat data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REVIEW (Pending - dengan action) -->
+    <div id="modalReview" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeModal('modalReview')"></div>
+        
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-200">
+                    
+                    <!-- Modal Header -->
+                    <div class="bg-gradient-to-r from-slate-50 to-white px-6 py-4 border-b border-slate-200 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800" id="modalReviewName">Nama Kandidat</h3>
+                            <p class="text-sm text-slate-500 flex items-center gap-1 mt-1">
+                                Melamar untuk: <span class="font-semibold text-primary-600" id="modalReviewPosition">Posisi</span>
+                            </p>
+                        </div>
+                        <button onclick="closeModal('modalReview')" class="text-slate-400 hover:text-slate-600">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="px-6 py-6 max-h-[70vh] overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Personal Info -->
+                            <div>
+                                <h4 class="text-xs font-bold uppercase text-slate-400 mb-3 tracking-wider">Data Pribadi</h4>
+                                <div class="space-y-3" id="modal-personal-info">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+
+                            <!-- Academic & CV -->
+                            <div>
+                                <h4 class="text-xs font-bold uppercase text-slate-400 mb-3 tracking-wider">Akademik & Dokumen</h4>
+                                <div class="space-y-3" id="modal-academic-info">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer (Actions) -->
+                    <div class="bg-slate-50 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-slate-200">
+                        <p class="text-sm text-slate-500">
+                            Tindakan ini akan mengubah status lamaran kandidat.
+                        </p>
+                        <div class="flex gap-3 w-full sm:w-auto">
+                            <button type="button" onclick="handleDecision('rejected')" class="flex-1 sm:flex-none justify-center inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                                <i data-lucide="x-circle" class="w-4 h-4"></i> Tolak
+                            </button>
+                            <button type="button" onclick="handleDecision('approved')" class="flex-1 sm:flex-none justify-center inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Terima
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VIEW (History - view only, no action buttons) -->
+    <div id="modalView" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-view-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeModal('modalView')"></div>
+        
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-200">
+                    
+                    <!-- Modal Header -->
+                    <div class="bg-gradient-to-r from-slate-50 to-white px-6 py-4 border-b border-slate-200 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800" id="modalViewName">Nama Kandidat</h3>
+                            <p class="text-sm text-slate-500 flex items-center gap-2 mt-1">
+                                <span id="modalViewPosition">Posisi</span>
+                                <span id="modalViewStatus" class="px-2 py-0.5 rounded-full text-xs font-medium"></span>
+                            </p>
+                        </div>
+                        <button onclick="closeModal('modalView')" class="text-slate-400 hover:text-slate-600">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="px-6 py-6 max-h-[70vh] overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Personal Info -->
+                            <div>
+                                <h4 class="text-xs font-bold uppercase text-slate-400 mb-3 tracking-wider">Data Pribadi</h4>
+                                <div class="space-y-3" id="modalView-personal-info">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+
+                            <!-- Academic & CV -->
+                            <div>
+                                <h4 class="text-xs font-bold uppercase text-slate-400 mb-3 tracking-wider">Akademik & Dokumen</h4>
+                                <div class="space-y-3" id="modalView-academic-info">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer (No action buttons) -->
+                    <div class="bg-slate-50 px-6 py-4 flex justify-end border-t border-slate-200">
+                        <button type="button" onclick="closeModal('modalView')" class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentTransaksiId = null;
+    let searchTimeoutPending;
+    let searchTimeoutHistory;
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPending();
+        lucide.createIcons();
+    });
+
+    // === PENDING FUNCTIONS ===
+    async function loadPending(search = '') {
+        try {
+            const url = `/dashboard/api/pendaftar/pending/?search=${encodeURIComponent(search)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.success) {
+                renderPendingTable(result.data);
+                document.getElementById('pending-count').textContent = result.data.length;
+            } else {
+                showToast(result.message || 'Gagal memuat data pending', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading pending:', error);
+            showToast('Terjadi kesalahan saat memuat data', 'error');
+        }
+    }
+
+    function renderPendingTable(data) {
+        const tbody = document.getElementById('pending-tbody');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-slate-400">
+                        <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
+                        <p>Tidak ada pendaftar yang perlu direview</p>
+                    </td>
+                </tr>
+            `;
+            lucide.createIcons();
+            return;
+        }
+
+        tbody.innerHTML = data.map(item => {
+            const initials = item.nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            const colors = ['amber', 'purple', 'blue', 'green', 'pink'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            return `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-medium text-slate-900">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-${color}-100 text-${color}-600 flex items-center justify-center font-bold text-xs">${initials}</div>
+                            <div>
+                                <div>${item.nama}</div>
+                                <div class="text-xs text-slate-400">NIK: ${item.nik}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-slate-900 font-medium">${item.posisi}</div>
+                        <div class="text-xs text-slate-400">${item.departemen}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div>${item.universitas}</div>
+                        <div class="text-xs text-slate-500">${item.jurusan} (${item.ipk || 'N/A'})</div>
+                    </td>
+                    <td class="px-6 py-4 text-slate-500">${item.tanggal_daftar}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="openReviewModal(${item.id_transaksi})" class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm">
+                            Review Lamaran <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        lucide.createIcons();
+    }
+
+    async function openReviewModal(idTransaksi) {
+        currentTransaksiId = idTransaksi;
+        
+        try {
+            const response = await fetch(`/dashboard/api/pendaftar/detail/${idTransaksi}/`);
+            const result = await response.json();
+
+            if (result.success) {
+                const data = result.data;
+                
+                // Set header
+                document.getElementById('modalReviewName').textContent = data.nama;
+                document.getElementById('modalReviewPosition').textContent = data.posisi;
+                
+                // Set personal info
+                document.getElementById('modal-personal-info').innerHTML = `
+                    <div>
+                        <p class="text-xs text-slate-500">NIK</p>
+                        <p class="font-medium text-slate-800">${data.nik}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Jenis Kelamin</p>
+                        <p class="font-medium text-slate-800">${data.jenis_kelamin}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Tanggal Lahir</p>
+                        <p class="font-medium text-slate-800">${data.tanggal_lahir}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">No. Telepon</p>
+                        <p class="font-medium text-slate-800">${data.no_telp}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Alamat</p>
+                        <p class="font-medium text-slate-800 text-sm leading-relaxed">${data.alamat}</p>
+                    </div>
+                `;
+                
+                // Set academic info
+                document.getElementById('modal-academic-info').innerHTML = `
+                    <div>
+                        <p class="text-xs text-slate-500">Universitas</p>
+                        <p class="font-medium text-slate-800">${data.universitas}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Jurusan</p>
+                        <p class="font-medium text-slate-800">${data.jurusan}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">IPK</p>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-sm font-bold bg-green-50 text-green-700 border border-green-200">
+                            ${data.ipk || 'N/A'} ${data.ipk ? '/ 4.00' : ''}
+                        </span>
+                    </div>
+                    <div class="pt-4">
+                        <p class="text-xs text-slate-500 mb-2">Curriculum Vitae</p>
+                        ${data.cv_url ? `
+                        <a href="${data.cv_url}" target="_blank" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-primary-300 hover:shadow-sm transition-all group">
+                            <div class="bg-red-100 p-2 rounded text-red-600">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-slate-700 group-hover:text-primary-700">${data.cv_filename}</p>
+                                <p class="text-xs text-slate-400">PDF</p>
+                            </div>
+                            <i data-lucide="download" class="w-4 h-4 text-slate-400 group-hover:text-primary-600"></i>
+                        </a>
+                        ` : `
+                        <div class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50">
+                            <div class="bg-slate-200 p-2 rounded text-slate-400">
+                                <i data-lucide="file-x" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-slate-500">CV tidak tersedia</p>
+                                <p class="text-xs text-slate-400">Belum diunggah</p>
+                            </div>
+                        </div>
+                        `}
+                    </div>
+                `;
+                
+                lucide.createIcons();
+                document.getElementById('modalReview').classList.remove('hidden');
+            } else {
+                showToast(result.message || 'Gagal memuat detail', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading detail:', error);
+            showToast('Terjadi kesalahan saat memuat detail', 'error');
+        }
+    }
+
+    async function handleDecision(status) {
+        if (!currentTransaksiId) return;
+        
+        const statusText = status === 'approved' ? 'menerima' : 'menolak';
+        if (!confirm(`Yakin ingin ${statusText} kandidat ini?`)) return;
+
+        try {
+            const response = await fetch(`/dashboard/api/pendaftar/${currentTransaksiId}/update-status/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ status })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showToast(result.message || `Berhasil ${statusText} kandidat`, 'success');
+                closeModal('modalReview');
+                loadPending();
+            } else {
+                showToast(result.message || `Gagal ${statusText} kandidat`, 'error');
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            showToast('Terjadi kesalahan saat memproses', 'error');
+        }
+    }
+
+    // === HISTORY FUNCTIONS ===
+    async function loadHistory(search = '') {
+        const status = document.getElementById('filter-status').value;
+        
+        try {
+            const url = `/dashboard/api/pendaftar/history/?search=${encodeURIComponent(search)}&status=${status}`;
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.success) {
+                renderHistoryTable(result.data);
+            } else {
+                showToast(result.message || 'Gagal memuat riwayat', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading history:', error);
+            showToast('Terjadi kesalahan saat memuat riwayat', 'error');
+        }
+    }
+
+    function renderHistoryTable(data) {
+        const tbody = document.getElementById('history-tbody');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-slate-400">
+                        <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
+                        <p>Tidak ada riwayat pendaftaran</p>
+                    </td>
+                </tr>
+            `;
+            lucide.createIcons();
+            return;
+        }
+
+        tbody.innerHTML = data.map(item => {
+            const statusClass = item.status === 'approved' 
+                ? 'bg-green-100 text-green-700 border-green-200' 
+                : 'bg-red-100 text-red-700 border-red-200';
+            const statusText = item.status === 'approved' ? 'Approved' : 'Rejected';
+            const rowClass = item.status === 'rejected' ? 'bg-slate-50/50' : '';
+            
+            return `
+                <tr class="hover:bg-slate-50 ${rowClass}">
+                    <td class="px-6 py-4 font-medium text-slate-900">${item.nama}</td>
+                    <td class="px-6 py-4">${item.posisi}</td>
+                    <td class="px-6 py-4 text-slate-500">${item.tanggal_daftar}</td>
+                    <td class="px-6 py-4">
+                        <span class="${statusClass} text-xs font-medium px-2.5 py-0.5 rounded-full border">${statusText}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="openViewModal(${item.id_transaksi})" class="text-slate-400 hover:text-primary-600">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        lucide.createIcons();
+    }
+
+    async function openViewModal(idTransaksi) {
+        try {
+            const response = await fetch(`/dashboard/api/pendaftar/detail/${idTransaksi}/`);
+            const result = await response.json();
+
+            if (result.success) {
+                const data = result.data;
+                
+                // Set header
+                document.getElementById('modalViewName').textContent = data.nama;
+                document.getElementById('modalViewPosition').textContent = data.posisi;
+                
+                // Set status badge
+                const statusBadge = document.getElementById('modalViewStatus');
+                if (data.status === 'approved') {
+                    statusBadge.className = 'px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200';
+                    statusBadge.textContent = 'Approved';
+                } else if (data.status === 'rejected') {
+                    statusBadge.className = 'px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200';
+                    statusBadge.textContent = 'Rejected';
+                }
+                
+                // Set personal info
+                document.getElementById('modalView-personal-info').innerHTML = `
+                    <div>
+                        <p class="text-xs text-slate-500">NIK</p>
+                        <p class="font-medium text-slate-800">${data.nik}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Jenis Kelamin</p>
+                        <p class="font-medium text-slate-800">${data.jenis_kelamin}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Tanggal Lahir</p>
+                        <p class="font-medium text-slate-800">${data.tanggal_lahir}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">No. Telepon</p>
+                        <p class="font-medium text-slate-800">${data.no_telp}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Alamat</p>
+                        <p class="font-medium text-slate-800 text-sm leading-relaxed">${data.alamat}</p>
+                    </div>
+                `;
+                
+                // Set academic info
+                document.getElementById('modalView-academic-info').innerHTML = `
+                    <div>
+                        <p class="text-xs text-slate-500">Universitas</p>
+                        <p class="font-medium text-slate-800">${data.universitas}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Jurusan</p>
+                        <p class="font-medium text-slate-800">${data.jurusan}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">IPK</p>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-sm font-bold bg-green-50 text-green-700 border border-green-200">
+                            ${data.ipk || 'N/A'} ${data.ipk ? '/ 4.00' : ''}
+                        </span>
+                    </div>
+                    <div class="pt-4">
+                        <p class="text-xs text-slate-500 mb-2">Curriculum Vitae</p>
+                        ${data.cv_url ? `
+                        <a href="${data.cv_url}" target="_blank" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-primary-300 hover:shadow-sm transition-all group">
+                            <div class="bg-red-100 p-2 rounded text-red-600">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-slate-700 group-hover:text-primary-700">${data.cv_filename}</p>
+                                <p class="text-xs text-slate-400">PDF</p>
+                            </div>
+                            <i data-lucide="download" class="w-4 h-4 text-slate-400 group-hover:text-primary-600"></i>
+                        </a>
+                        ` : `
+                        <div class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50">
+                            <div class="bg-slate-200 p-2 rounded text-slate-400">
+                                <i data-lucide="file-x" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-slate-500">CV tidak tersedia</p>
+                                <p class="text-xs text-slate-400">Belum diunggah</p>
+                            </div>
+                        </div>
+                        `}
+                    </div>
+                `;
+                
+                lucide.createIcons();
+                document.getElementById('modalView').classList.remove('hidden');
+            } else {
+                showToast(result.message || 'Gagal memuat detail', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading detail:', error);
+            showToast('Terjadi kesalahan saat memuat detail', 'error');
+        }
+    }
+
+    // === SEARCH FUNCTIONS ===
+    function searchPending(value) {
+        clearTimeout(searchTimeoutPending);
+        searchTimeoutPending = setTimeout(() => loadPending(value), 500);
+    }
+
+    function searchHistory(value) {
+        clearTimeout(searchTimeoutHistory);
+        searchTimeoutHistory = setTimeout(() => loadHistory(value), 500);
+    }
+
+    // === TAB & MODAL FUNCTIONS ===
+    function switchTab(tabName) {
+        document.getElementById('content-pending').classList.add('hidden');
+        document.getElementById('content-history').classList.add('hidden');
+        
+        document.getElementById('tab-pending').className = "tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+        document.getElementById('tab-history').className = "tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+
+        document.getElementById(`content-${tabName}`).classList.remove('hidden');
+        document.getElementById(`tab-${tabName}`).className = "tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+        
+        // Load data for active tab
+        if (tabName === 'pending') {
+            loadPending();
+        } else {
+            loadHistory();
+        }
+        
+        lucide.createIcons();
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        currentTransaksiId = null;
+    }
+
+    // Check if we need to auto-open modal from URL parameter
+    function checkAutoOpenModal() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewId = urlParams.get('view');
+        if (viewId) {
+            // Switch to history tab and open view modal
+            switchTab('history');
+            setTimeout(() => {
+                openViewModal(parseInt(viewId));
+            }, 300);
+        }
+    }
+
+    // === UTILITY FUNCTIONS ===
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function showToast(message, type = 'success') {
+        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+        const toast = document.createElement('div');
+        toast.className = `fixed top-5 right-5 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-110 transition-opacity`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPending();
+        checkAutoOpenModal();
+    });
+</script>
+{% endblock %}

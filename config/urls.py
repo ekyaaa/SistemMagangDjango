@@ -18,10 +18,20 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
+from admin_dashboard.auth_views import custom_logout
+
+# Custom admin site configuration
+admin.site.site_header = "MagangHub Administration"
+admin.site.site_title = "MagangHub Admin"
+admin.site.index_title = "Welcome to MagangHub Dashboard"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/logout/', custom_logout, name='admin_logout'),  # Custom logout must be before admin/
+    path('admin/', admin.site.urls),  # Keep admin for login
+    path('admin/dashboard/', RedirectView.as_view(url='/dashboard/', permanent=False)),  # Redirect admin index
     path('', include('magang.urls')),
+    path('dashboard/', include('admin_dashboard.urls')),
 ]
 
 # Serve media files in development
